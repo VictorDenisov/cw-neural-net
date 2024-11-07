@@ -1,10 +1,33 @@
+import urllib.request
+
 import requests
 from bs4 import BeautifulSoup
 from bs4.element import ResultSet
 
 
 def download_archive(url: str):
+    url = "http://www.arrl.org/5-wpm-code-archive"
     r = requests.get(url)
+
+    soup = BeautifulSoup(r.content)
+    print(soup.prettify())
+    links = soup.find_all("a")
+
+    archive_links = list(
+        filter(
+            lambda x: x.has_attr("href")
+            and ("mp3" in x.get("href") or "txt" in x.get("href")),
+            links,
+        )
+    )
+
+    for i in range(len(archive_links) // 2):
+        if not archive_links[2 * i].get("href").endswith("mp3"):
+            raise RuntimeError("Expected mp3 on odd positions")
+        print(f"{archive_links[2 * i]}, {archive_links[2 * i + 1]}")
+        urllib.request.urlretrieve(archive_links[2 * i].get("href"), "{i}.mp3")
+
+    print(*archive_links, sep="\n")
 
 
 def main():
@@ -32,6 +55,8 @@ def main():
         ),
     )
     for l in wpm_archive:
+        if "http" in l:
+            download_archive(l)
 
     print(wpm_archive)
     print(*wpm_archive, sep="\n")
