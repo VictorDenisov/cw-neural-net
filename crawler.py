@@ -20,12 +20,18 @@ def download_archive(url: str):
             links,
         )
     )
+    i = 0
 
     for i in range(len(archive_links) // 2):
         if not archive_links[2 * i].get("href").endswith("mp3"):
             raise RuntimeError("Expected mp3 on odd positions")
         print(f"{archive_links[2 * i]}, {archive_links[2 * i + 1]}")
-        urllib.request.urlretrieve(archive_links[2 * i].get("href"), "{i}.mp3")
+        urllib.request.urlretrieve(
+            "http://www.arrl.org/" + archive_links[2 * i].get("href"), f"{i}.mp3"
+        )
+        urllib.request.urlretrieve(
+            "http://www.arrl.org/" + archive_links[2 * i + 1].get("href"), f"{i}.txt"
+        )
 
     print(*archive_links, sep="\n")
 
