@@ -1,4 +1,6 @@
+import os
 import urllib.request
+from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -26,12 +28,16 @@ def download_archive(url: str):
         if not archive_links[2 * i].get("href").endswith("mp3"):
             raise RuntimeError("Expected mp3 on odd positions")
         print(f"{archive_links[2 * i]}, {archive_links[2 * i + 1]}")
-        urllib.request.urlretrieve(
-            "http://www.arrl.org/" + archive_links[2 * i].get("href"), f"{i}.mp3"
-        )
-        urllib.request.urlretrieve(
-            "http://www.arrl.org/" + archive_links[2 * i + 1].get("href"), f"{i}.txt"
-        )
+
+        url = "http://www.arrl.org/" + archive_links[2 * i].get("href")
+        parsed_url = urlparse(url)
+        filename = os.path.basename(parsed_url.path)
+        urllib.request.urlretrieve(url, f"{filename}")
+
+        url = "http://www.arrl.org/" + archive_links[2 * i + 1].get("href")
+        parsed_url = urlparse(url)
+        filename = os.path.basename(parsed_url.path)
+        urllib.request.urlretrieve(url, f"{filename}")
 
     print(*archive_links, sep="\n")
 
