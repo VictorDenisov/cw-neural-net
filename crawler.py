@@ -1,7 +1,9 @@
 import os
+import random
 import urllib.request
 from urllib.parse import urlparse
 
+import matplotlib.pyplot as plt
 import requests
 from bs4 import BeautifulSoup
 from bs4.element import ResultSet
@@ -40,6 +42,17 @@ def download_archive(url: str):
         urllib.request.urlretrieve(url, f"{filename}")
 
     print(*archive_links, sep="\n")
+
+
+size = 15
+
+x = range(size)
+y = [random.randint(i * 5, 100) for i in range(size)]
+for i in y:
+    print(i)
+
+fig, ax = plt.subplots()
+img = ax.plot(x, y)
 
 
 def main():
