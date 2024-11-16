@@ -44,17 +44,6 @@ def download_archive(url: str):
     print(*archive_links, sep="\n")
 
 
-size = 15
-
-x = range(size)
-y = [random.randint(i * 5, 100) for i in range(size)]
-for i in y:
-    print(i)
-
-fig, ax = plt.subplots()
-img = ax.plot(x, y)
-
-
 def main():
     start_page = "http://www.arrl.org/code-practice-files"
 
