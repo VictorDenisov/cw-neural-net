@@ -33,12 +33,13 @@ def download_archive(url: str):
 
         url = "http://www.arrl.org/" + archive_links[2 * i].get("href")
         parsed_url = urlparse(url)
-        filename = os.path.basename(parsed_url.path)
+        filename = os.path.join("data", os.path.basename(parsed_url.path))
+
         urllib.request.urlretrieve(url, f"{filename}")
 
         url = "http://www.arrl.org/" + archive_links[2 * i + 1].get("href")
         parsed_url = urlparse(url)
-        filename = os.path.basename(parsed_url.path)
+        filename = os.path.join("data", os.path.basename(parsed_url.path))
         urllib.request.urlretrieve(url, f"{filename}")
 
     print(*archive_links, sep="\n")
@@ -74,3 +75,7 @@ def main():
 
     print(wpm_archive)
     print(*wpm_archive, sep="\n")
+
+
+if __name__ == "__main__":
+    main()
