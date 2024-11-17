@@ -1,3 +1,4 @@
+import logging
 import os
 import random
 import urllib.request
@@ -8,13 +9,14 @@ import requests
 from bs4 import BeautifulSoup
 from bs4.element import ResultSet
 
+logger = logging.getLogger(__name__)
+
 
 def download_archive(url: str):
-    url = "http://www.arrl.org/5-wpm-code-archive"
+    logger.info(f"Downloading url: {url}")
     r = requests.get(url)
 
     soup = BeautifulSoup(r.content)
-    print(soup.prettify())
     links = soup.find_all("a")
 
     archive_links = list(
@@ -29,7 +31,9 @@ def download_archive(url: str):
     for i in range(len(archive_links) // 2):
         if not archive_links[2 * i].get("href").endswith("mp3"):
             raise RuntimeError("Expected mp3 on odd positions")
-        print(f"{archive_links[2 * i]}, {archive_links[2 * i + 1]}")
+        print(
+            f"{archive_links[2 * i].get("href")}, {archive_links[2 * i + 1].get("href")}"
+        )
 
         url = "http://www.arrl.org/" + archive_links[2 * i].get("href")
         parsed_url = urlparse(url)
@@ -42,25 +46,15 @@ def download_archive(url: str):
         filename = os.path.join("data", os.path.basename(parsed_url.path))
         urllib.request.urlretrieve(url, f"{filename}")
 
-    print(*archive_links, sep="\n")
-
 
 def main():
+    logger.info("Downloading top level list")
     start_page = "http://www.arrl.org/code-practice-files"
 
     r = requests.get(start_page)
 
-    print(r.content)
-
     soup = BeautifulSoup(r.content)
-    print(soup)
     links = soup.find_all("a")
-    print(*links, sep="\n")
-    print(type(links))
-    link = links[15]
-    print(type(link))
-    print(link.get("href"))
-    print("code-archive" in link.get("href"))
 
     wpm_archive = map(
         lambda x: x["href"],
@@ -73,9 +67,27 @@ def main():
         if "http" in l:
             download_archive(l)
 
-    print(wpm_archive)
-    print(*wpm_archive, sep="\n")
+
+def setup_logging():
+    # create logger
+    logger.setLevel(logging.DEBUG)
+
+    # create console handler and set level to debug
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+
+    # create formatter
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+
+    # add formatter to ch
+    ch.setFormatter(formatter)
+
+    # add ch to logger
+    logger.addHandler(ch)
 
 
 if __name__ == "__main__":
+    setup_logging()
     main()
