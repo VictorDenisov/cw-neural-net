@@ -9,4 +9,9 @@ dependencies = [
   "ipykernel",
   "transformers",
   "datasets",
+  "evaluate",
+  "jiwer",
+  "pynvim",
+  "jupyter_client",
+  "librosa",
 ]
