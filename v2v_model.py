@@ -1,10 +1,31 @@
-from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
+# from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
+#
+# from datasets import load_dataset
+#
+# model_name = "facebook/wav2vec2-base"
+# Wav2Vec2Processor.from_pretrained(model_name)
+#
+# #timit = load_dataset("timit_asr")
+# ds = load_dataset("lhoestq/demo1")
 
+from transformers import Wav2Vec2Processor, Wav2Vec2ForCTC
 from datasets import load_dataset
+import torch
 
-model_name = "facebook/wav2vec2-base"
-Wav2Vec2Processor.from_pretrained(model_name)
+# load model and tokenizer
+processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-base-960h")
+model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-base-960h")
+ 
+# load dummy dataset and read soundfiles
+ds = load_dataset("patrickvonplaten/librispeech_asr_dummy", "clean", split="validation")
 
-#timit = load_dataset("timit_asr")
-ds = load_dataset("lhoestq/demo1")
+# tokenize
+input_values = processor(ds[0]["audio"]["array"], return_tensors="pt", padding="longest").input_values  # Batch size 1
+
+# retrieve logits
+logits = model(input_values).logits
+
+# take argmax and decode
+predicted_ids = torch.argmax(logits, dim=-1)
+transcription = processor.batch_decode(predicted_ids)
 
