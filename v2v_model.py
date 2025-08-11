@@ -35,6 +35,7 @@ if sampling_rate != 16000:
 
 # 3. Prepare Input for Model
 input_values = processor(waveform.squeeze(0), sampling_rate=16000, return_tensors="pt").input_values
+input_values = torch.squeeze(input_values)  # Remove the batch dimension
 
 # 4. Get Logits (Model Output)
 with torch.no_grad():
