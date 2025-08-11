@@ -8,7 +8,6 @@ dependencies = [
   "torchaudio>=2.6.0",
   "pyright",
   "ipykernel",
-  "transformers",
   "datasets",
   "evaluate",
   "jiwer",

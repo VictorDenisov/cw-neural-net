@@ -1423,7 +1423,6 @@ requires-dist = [
     { name = "torchaudio", specifier = ">=2.6.0", index = "https://download.pytorch.org/whl/cu118" },
     { name = "torchvision", specifier = ">=0.15.0", index = "https://download.pytorch.org/whl/cu118" },
     { name = "torchvision", specifier = ">=0.21.0", index = "https://download.pytorch.org/whl/cu118" },
-    { name = "transformers" },
     { name = "transformers", specifier = ">=4.30.0" },
 ]
 
