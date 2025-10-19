@@ -26,7 +26,7 @@ processor = AutoProcessor.from_pretrained("facebook/hubert-large-ls960-ft")
 # tokenize
 #input_values = processor(ds[0]["audio"]["array"], return_tensors="pt", padding="longest").input_values  # Batch size 1
 
-audio_path = "output.wav"  # Replace with your audio file
+audio_path = "M_0025_11y10m_1.wav"  # Replace with your audio file
 waveform, sampling_rate = torchaudio.load(audio_path)
 if sampling_rate != 16000:
     # Resample if needed
@@ -36,20 +36,27 @@ if sampling_rate != 16000:
 print(waveform.shape)  # Should be [1, T] for mono audio
 
 # 3. Prepare Input for Model
-input_values = processor(waveform.squeeze(0), sampling_rate=16000, return_tensors="pt").input_values
-print(type(input_values))
-print(input_values.shape)
+input_values = processor(waveform.squeeze(0), sampling_rate=16000, return_tensors="pt", padding="longest").input_values
+print(f"Type of input values: {type(input_values)}")
+print(f"Input values shape: {input_values.shape}")
 input_values = torch.squeeze(input_values)  # Remove the batch dimension
+
+input_values_reshaped = input_values.reshape(1, -1)  # Reshape to add batch dimension back
+print(f"Reshaped input values shape: {input_values_reshaped.shape}")
 
 # 4. Get Logits (Model Output)
 with torch.no_grad():
-    logits = model(input_values[0].reshape(1, -1)).logits
+    logits = model(input_values_reshaped).logits
 
 # 5. Decode Logits to Text
+print(f"Logits shape: {logits.shape}")
 predicted_ids = torch.argmax(logits, dim=-1)
-transcription = processor.decode(predicted_ids)
+print(f"Predicted IDs shape: {predicted_ids.shape}")
+squeezed_predicted_ids = torch.squeeze(predicted_ids)  # Remove batch dimension for decoding
+print(f"Squeed Predicted IDs shape: {squeezed_predicted_ids.shape}")
+transcription = processor.decode(squeezed_predicted_ids)
 
-print(transcription)
+print(f"Transcription: {transcription}")
 
 # retrieve logits
 # logits = model(input_values).logits
